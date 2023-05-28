@@ -158,7 +158,7 @@ function getStringLength(str) {
 console.log(getStringLength("")); // 0
 console.log(getStringLength("hi")); // 2
 
-// * 옵셔널 체이닝: null 또는 undefined 인 경우 그것을 반환하고, 그렇지 않으면 우항의 프로퍼티 참조를 이어감
+// * 옵셔널 체이닝: 좌항이 null 또는 undefined 인 경우 그것을 반환하고, 그렇지 않으면 우항의 프로퍼티 참조를 이어감
 // 09-26
 var elem = null;
 var value = elem?.value;

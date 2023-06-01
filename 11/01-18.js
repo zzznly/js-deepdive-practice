@@ -140,3 +140,13 @@ person.address = "Namyangju"; // person을 통해 객체 변경 (프로퍼티 �
 // copy와 person은 동일한 객체를 참조하므로, 어느 한쪽에서 객체를 변경하면 서로 영향을 받는다
 console.log(person); // { name: "Kim", address: "Namyangju" }
 console.log(copy); // { name: "Kim", address: "Namyangju" }
+
+// 11-18
+var person1 = {
+  name: "Lee",
+};
+var person2 = {
+  name: "Lee",
+};
+console.log(person1 === person2); // false
+console.log(person1.name === person2.name); // true

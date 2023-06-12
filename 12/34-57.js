@@ -190,6 +190,12 @@ repeat(5, (i) => {
 }); // 1 3
 
 // 12-53
+const logOdd = (i) => { // 단 한번만 생성됨
+    if(i % 2) console.log(i)
+}
+// 고차 함수에 함수 참조 전달
+repeat(5, logOdd); // 1, 3
+
 
 // 12-54
 document.getElementById('myButton').addEventListener('click', function () {

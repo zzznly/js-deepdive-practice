@@ -302,7 +302,13 @@ const circle33 = Circle(5);
 console.log(circle33.getDiameter()); // 10
 
 // 17-20
+// Scope-Safe Constructor Pattern
 function Circle(radius) {
+  // 생성자 함수가 new 연산자와 함께 호출되면 함수의 선두에서 빈 객체를 생성하고
+  // this에 바인딩한다. 이때 this와 Circle은 프로토타입에 의해 연결된다.
+
+  // 이 함수가 new 연산자와 함께 호출되지 않았다면 이 시점의 this는 전역 객체 window를 가리킨다.
+  // 즉, this와 Circle은 프로토타입에 의해 연결되지 않는다.
   if (!(this instanceof Circle)) {
     return new Circle(radius);
   }
@@ -312,5 +318,28 @@ function Circle(radius) {
   };
 }
 // new 연산자 없이 생성자 함수를 호출하여도 생성자 함수로서 호출된다.
-const circle = Circle(5);
+const circle44 = Circle(5);
 console.log(circle.getDiameter()); // 10
+
+// 17-21
+let obj2 = new Object();
+console.log(obj2); // { }
+
+obj2 = Object();
+console.log(obj2); // {}
+
+let f = new Function("x", "return x ** x");
+console.log(f); // f anonymous(x) {return x ** x}
+
+f = Function("x", "return x ** x");
+console.log(f); // f anonymous(x) {return x ** x}
+
+// 17-22
+const str = String(123);
+console.log(str, typeof str); // '123' string
+
+const num = Number(123);
+console.log(num, typeof num); // 123 number
+
+const bool = Boolean("true");
+console.log(bool, typeof bool); // true boolean

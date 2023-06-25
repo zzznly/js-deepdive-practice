@@ -146,7 +146,7 @@ function Circle2(radius) {
 }
 
 // 17-10
-function Circle3(radius) {
+function Circle(radius) {
   this.radius = radius;
   this.getDiameter = function () {
     return 2 * this.radius;
@@ -159,7 +159,7 @@ const circle11 = new Circle(1);
 console.log(circle); // Circle {radius: 1, getDiameter: f}
 
 // 17-11
-function Circle3(radius) {
+function Circle(radius) {
   this.radius = radius;
   this.getDiameter = function () {
     return 2 * this.radius;
@@ -210,3 +210,107 @@ f(); // 일반 함수로서 호출. [[ Call ]] 호출
 new f(); // 생성자 함수로서 호출. [[ Construct ]] 호출
 
 // 17-15
+function foo() {} // 함수 선언문
+const bar = function () {}; // 함수 표현식
+const baz = {
+  x: function () {}, // 프로퍼티 x의 값으로 할당된것은 일반 함수! 메서드로 인정하지 않음
+  sayHi() {
+    // 메서드 축약 표현 (es6)
+    console.log("Hi");
+  },
+};
+
+/**
+ * 함수를 프로퍼티 값으로 사용하면 일반적으로 메서드로 통칭한다.
+ * 하지만 es6에서 메서드란 메서드 축약 표현만을 의미한다.
+ * 다시 말해 함수가 어디에 할당되어 있는지가 아닌 함수 정의 방식에 따라 constructor, non-constructor를 구분한다
+ * */
+
+// - constructor : 일반 함수(함수 선언문, 함수 표현식)
+// - non-constructor : 화살표 함수, 메서드 축약 표현
+
+new foo(); // foo {}
+new bar(); // bar {}
+new baz.x(); // x {}
+
+const arrow = () => {};
+new arrow(); // TypeError: arrow is not a contsructor
+
+// 메서드 정의 : es6 메서드 축약만을 메서드로 인정한다
+const obj1 = {
+  method() {},
+};
+
+new obj1.method(); // TypeError: obj1.method is not a constructor
+
+// 17-16
+function foo() {}
+
+// 일반함수로 호출 - [[Call]] 이 호출됨.
+foo(); // undefined 를 리턴한다
+
+// 생성자 함수로 호출 - [[Contruct]] 가 호출됨.
+new foo(); // 빈 객체 {} 를 리턴한다
+
+// 17-17
+function add(x, y) {
+  // 생성자 함수로서 정의하지 않은 일반 함수
+  return x + y;
+}
+
+let inst1 = new add();
+console.log(inst1); // { }
+
+function createUser(name, role) {
+  // 객체를 반환하는 일반 함수
+  return { name, role };
+}
+let inst2 = new createUser("Lee", "admin");
+console.log(inst2); // {name: 'Lee', role: 'admin}
+
+// 17-18
+function Circle(radius) {
+  this.radius = radius;
+  this.getDiameter = function () {
+    return 2 * this.radius;
+  };
+}
+
+const circle22 = Circle(5); // new 연산자 없이 생성자 함수 호출하면 -> 일반 함수로서 호출된다
+console.log(circle22); // undefined
+
+console.log(radius); // 5
+console.log(getDiameter()); // 10
+
+circle.getDiameter(); // TypeError: Cannot read property 'getDiameter' of undefined
+
+// 17-19
+function Circle(radius) {
+  // new.target - 생성자함수로서 호출될때 함수 자신을 가리킴
+  if (!new.target) {
+    // new 연산자와 함께 호출되지 않을 경우 -> new.target은 undefined 이다
+    return new Circle(radius); // 생성자 함수를 재귀 호출하여 생성된 인스턴스 반환
+  }
+
+  this.radius = radius;
+  this.getDiameter = function () {
+    return 2 * this.radius;
+  };
+}
+
+const circle33 = Circle(5);
+console.log(circle33.getDiameter()); // 10
+
+// 17-20
+function Circle(radius) {
+  if (!(this instanceof Circle)) {
+    return new Circle(radius);
+  }
+  this.radius = radius;
+  this.getDiameter = function () {
+    return 2 * this.radius;
+  };
+}
+// new 연산자 없이 생성자 함수를 호출하여도 생성자 함수로서 호출된다.
+const circle = Circle(5);
+console.log(circle.getDiameter()); // 10

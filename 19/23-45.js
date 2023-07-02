@@ -217,3 +217,93 @@ console.log(me7.constructor === Object); // false
 console.log(Person.prototype === Object.getPrototypeOf(me7)); // true
 
 // => 이처럼 프로토타입 교체를 통해 객체 간의 상속관계를 동적으로 변경하는것은 꽤나 번거롭다. 프로토타입 직접교체보다는 직접상속이 더 편리하고 안전하다.
+
+// 46
+function Person(name) {
+  this.name = name;
+}
+
+const me8 = new Person("Yoo");
+
+console.log(me8 instanceof Person); // true
+console.log(me8 instanceof Object); // true
+
+// 47
+function Person(name) {
+  this.name = name;
+}
+
+const me9 = new Person("Yoo");
+
+const parent9 = {}; // 프로토타입으로 교체할 객체
+
+Object.setPrototypeOf(me9, parent); // 프로토타입의 교체
+
+console.log(Person.prototype === parent); // false
+console.log(parent.constructor === Person); // false
+
+console.log(me9 instanceof Person); // false
+console.log(me9 instanceof Object); // true
+
+// 48
+function Person(name) {
+  this.name = name;
+}
+
+const me10 = new Person("Yoo");
+
+const parent10 = {}; // 프로토타입으로 교체할 객체
+
+Object.setPrototypeOf(me10, parent10); // 프로토타입의 교체
+
+console.log(Person.prototype === parent10); // false
+console.log(parent10.constructor === Person); // false
+
+Person.prototype = parent10;
+
+console.log(me10 instanceof Person); // true
+console.log(me10 instanceof Object); // true
+
+// 49
+function isInstanceOf(instance, constructor) {
+  const prototype = Object.getPrototypeOf(instance);
+
+  // 프로토타입이 null 이면, 프로토타입 체인의 종점에 다다른 것이다
+  if (prototype === null) return false;
+
+  // instance의 prototype이 생성자함수의 프로토타입에 바인딩되어있다면 true,
+  // 아니라면 재귀호출로 prototype의 프로토타입(상위 프로토타입)으로 타고 올라가서 또 확인
+  return (
+    prototype === constructor.prototype || isInstanceOf(prototype, constructor)
+  );
+}
+
+console.log(isInstanceOf(me10, Person)); // true
+console.log(isInstanceOf(me10, Object)); // true
+console.log(isInstanceOf(me10, Array)); // false
+
+// 50
+const Person = (function () {
+  function Person(name) {
+    this.name = name;
+  }
+
+  // 생성자 함수의 prototype 프로퍼티를 통해 프로토타입 교체
+  // => constructor 프로퍼티(me.constructor)와 생성자 함수(Person) 간의 연결 파괴
+  Person.prototype = {
+    sayHello() {
+      console.log(`Hi My name is ${this.name}`);
+    },
+  };
+
+  return Person;
+})();
+
+const me11 = new Person("Lee");
+
+// constructor 프로퍼티와 생성자 함수 간의 연결은 파괴되어도 instanceof는 아무런 영향을 받지 않는다.
+console.log(me11); // { name: 'Lee' }
+console.log(me11.constructor === Person); // false
+
+console.log(me11 instanceof Person); // true
+console.log(me11 instanceof Object); // true

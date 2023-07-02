@@ -61,3 +61,159 @@ console.log(me2.foo); // undefined
 
 // 35
 console.log(me2.hasOwnProperty("name")); // true
+
+// 36, 37
+const Person = (function () {
+  function Person(name) {
+    this.name = name;
+  }
+
+  Person.prototype.sayHello = function () {
+    console.log(`Hi My name is ${this.name}`);
+  };
+
+  return Person;
+})();
+
+// 생성차 함수로 객체 생성
+const me3 = new Person("Lee");
+
+// 인스턴스에 메서드 추가
+me3.sayHello = function () {
+  console.log(`Hey! My name is ${this.name}`);
+};
+
+/**
+ * 인스턴스 메서드 sayHello 가 프로토타입 메서드 sayHello를 오버라이딩,
+ * 상속관계에 의해 프로토타입 메서드 sayHello는 가려진다
+ * => 프로퍼티 섀도잉
+ * */
+
+me3.sayHello();
+
+// 37
+delete me3.sayHello; // 인스턴스 메서드 삭제
+me3.sayHello(); // Hi! My name is Lee
+// => 인스턴스에 sayHello 메서드 삭제되어 없으므로 프로토타입 메서드 호출
+
+// 38
+delete me3.sayHello; // 프로토타입 체인을 통해 프로토타입 메서드 삭제되지 않음
+me3.sayHello(); // Hi My name is Lee
+
+// ** 하위 객체를 통해 프로토타입의 프로퍼티를 변경/삭제하는것은 불가능하다!
+// (= 하위 객체를 통한 get 액세스는 허용하나 set 액세스는 허용되지 않는다)
+
+// 39
+// 프로토타입 메서드 변경
+Person.prototype.sayHello = function () {
+  console.log(`Hey! My name is ${this.name}`);
+};
+me3.sayHello(); // Hey! My name is Lee
+
+// 프로토타입 메서드 삭제
+delete Person.prototype.sayHello;
+me3.sayHello(); // TypeError: me3.sayHello is not a function
+
+// 프로토타입의 교체 **
+// 40, 41, 42
+const Person = (function () {
+  function Person(name) {
+    this.name = name;
+  }
+
+  // (1) 생성자 함수의 prototype 프로퍼티를 통해 프로토타입 교체
+  // 프로토타입에 객체 리터럴 할당
+  Person.prototype = {
+    sayHello() {
+      console.log(`Hi! My name is ${this.name}`);
+    },
+  };
+
+  return Person;
+})();
+
+const me4 = new Person("Lee");
+
+// 41
+// 프로토타입을 교체해서, constructor 프로퍼티와 생성자 함수간의 연결 파괴됨!
+console.log(me4.constructor === Person); // false
+
+// 프로토타입 체인을 따라 Object.prototype 의 constructor 프로퍼티가 검색됨!
+console.log(me4.constructor === Object); // true
+
+// 42
+const Person = (function () {
+  function Person(name) {
+    this.name = name;
+  }
+
+  // 생성자 함수의 prototype 프로퍼티를 통해 프로토타입 교체
+  Person.prototype = {
+    constructor: Person, // constructor 프로퍼티와 생성자 함수 간의 연결 설정
+    sayHello() {
+      console.log(`Hi! My name is ${this.name}`);
+    },
+  };
+
+  return Person;
+})();
+
+const me5 = new Person("Lee");
+
+console.log(me5.constructor === Person); // true
+console.log(me5.constructor === Object); // false
+
+// 43
+function Person(name) {
+  this.name = name;
+}
+
+const me6 = new Person("Lee");
+
+// 프로토타입으로 교체할 객체
+const parent = {
+  sayHello() {
+    console.log(`Hi! My name is ${this.name}`);
+  },
+};
+
+// (1) me 객체의 프로토타입을 parent 객체로 교체한다
+Object.setPrototypeOf(me6, parent);
+// me.__proto__ = parent ( 위 코드와 동일 )
+
+me6.sayHello(); // Hi! My name is Lee
+
+// 44
+// 프로토타입을 교체하면 constructor 프로퍼티와 생성자 함수 간의 연결이 파괴된다.
+console.log(me.constructor === Person); // false
+
+// 프로토타입 체인을 따라 Object.prototype의 constructor 프로퍼티가 검색된다.
+console.log(me.constructor === Object); // true
+
+// 45
+function Person(name) {
+  this.name = name;
+}
+
+const me7 = new Person("Yoo");
+
+const parent7 = {
+  constructor: Person,
+  sayHello() {
+    console.log(`Hi! My name is ${this.name}`);
+  },
+};
+
+// 생성자 함수의 prototype 프로퍼티와 프로토타입 간의 연결을 설정
+Person.prototype = parent;
+
+Object.setPrototypeOf(me7, parent);
+
+me7.sayHello();
+
+console.log(me7.constructor === Person); // true
+console.log(me7.constructor === Object); // false
+
+console.log(Person.prototype === Object.getPrototypeOf(me7)); // true
+
+// => 이처럼 프로토타입 교체를 통해 객체 간의 상속관계를 동적으로 변경하는것은 꽤나 번거롭다. 프로토타입 직접교체보다는 직접상속이 더 편리하고 안전하다.

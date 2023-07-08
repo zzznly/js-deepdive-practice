@@ -61,6 +61,7 @@ obj.a = 1;
 
 console.log(Object.prototype.hasOwnProperty.call(obj, "a")); // true
 
+// 객체 리터럴 내부에서 __proto__ 에 의한 직접 상속
 // 55
 const myProto1 = { x: 10 };
 
@@ -71,3 +72,119 @@ const obj = {
 
 console.log(obj.x, obj.y); // 10 20
 console.log(Object.getPrototypeOf(obj) === myProto1); // true
+
+// 정적 프로퍼티/메서드 : 생성자 함수로 인스턴스를 생성하지 않아도 참조/호출할 수 있는 프로퍼티/메서드
+// 56
+function Person(name) {
+  this.name = name;
+}
+
+Person.prototype.sayHello = function () {
+  console.log(`Hi! My name is ${this.name}`);
+};
+
+Person.staticProp = "staticProp"; // 정적 프로퍼티
+
+Person.staticMethod = function () {
+  // 정적 메소드
+  console.log("staticMethod");
+};
+
+const me = new Person("Lee");
+
+Person.staticMethod(); // staticMethod
+
+me.staticMethod(); //  TypeError: me.staticMethod is not a function
+
+// 57
+const obj = Object.create({ name: "Lee" }); // Object.create는 정적 메서드
+
+obj.hasOwnProperty("name"); // false - Object.prototype.hasOwnProperty는 프로토타입 메서드다
+
+// 58
+function Foo() {}
+
+Foo.prototype.x = function () {
+  console.log("x");
+};
+
+const foo = new Foo(); // 프로토타입 메서드 호출을 위해 인스턴스 생성
+foo.x(); // x
+
+Foo.x = function () {
+  console.log("x");
+};
+
+Foo.x(); // x - 정적 메서드는 인스턴스 생성 안해도 호출 가능
+
+// 59
+const person = {
+  name: "Lee",
+  address: "Seoul",
+};
+
+console.log("name" in person); // true
+console.log("address" in person); // true
+console.log("age" in person); // false
+
+// 60
+// * in 연산자는 대상 객체가 상속받은 모든 프로토타입의 프로퍼티를 확인한다!
+console.log("toString" in person); // true
+// toString 은 Object.prototype의 메서드다
+
+// 61
+// Reflect.has 메서드 - in 연산자와 동일하게 동작
+const person1 = { name: "Lee" };
+
+console.log(Reflect.has(person, "name")); // true
+console.log(Reflect.has(person, "toString")); // true
+
+// 62
+console.log(person1.hasOwnProperty("name")); // true
+console.log(person1.hasOwnProperty("age")); // false
+// 63
+console.log(person1.hasOwnProperty("toString")); // false -> 대상객체의 고유 프로퍼티가 아니므로
+
+// 64
+const person2 = {
+  name: "Lee",
+  address: "Seoul",
+};
+
+for (const key in person) {
+  console.log(key + ": " + person[key]);
+}
+// name: Lee
+// address: Seoul
+
+// 65
+const person3 = {
+  name: "Lee",
+  address: "Seoul",
+};
+
+for (const key in person) {
+  console.log(key + ": " + person[key]);
+}
+// name: Lee
+// address: Seoul
+
+console.log("toString" in person3); // true
+// toString은 열거할 수 없도록 정의된 프로퍼티이므로 for ... in 문에서 열거되지 않는다!
+
+// 66
+console.log(Object.getOwnPropertyDescriptor(Object.prototype, "toString"));
+// { value: f, writable: true, enumerable: false, configurable: true }
+
+// 67
+const person4 = {
+  name: "Lee",
+  address: "Seoul",
+  __proto__: { age: 20 },
+};
+for (const key in person) {
+  console.log(key + ": " + person[key]);
+}
+// name: Lee
+// address: Seoul
+// age: 20

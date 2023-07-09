@@ -254,7 +254,7 @@ for (const value of arr) {
   console.log(value); // 1, 2, 3
 }
 
-// 72
+// 72 - Object.keys
 const person12 = {
   name: "Lee",
   address: "Seoul",
@@ -262,10 +262,12 @@ const person12 = {
 };
 console.log(Object.keys(person12)); // ["name", "address"]
 
-// 73
+// 73 - Object.values
 console.log(Object.values(person12)); // ["Lee", "Seoul"]
 
-// 74
+// 74 - Object.entries
 console.log(Object.entries(person12)); // [["name", "Lee"], ["address", "Seoul"]]
 
 Object.entries(person12).forEach(([key, value]) => console.log(key, value));
+// name Lee
+// address Seoul

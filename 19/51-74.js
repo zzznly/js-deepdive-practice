@@ -263,9 +263,9 @@ const person12 = {
 console.log(Object.keys(person12)); // ["name", "address"]
 
 // 73
-console.log(Object.values(person)); // ["Lee", "Seoul"]
+console.log(Object.values(person12)); // ["Lee", "Seoul"]
 
 // 74
-console.log(Object.entries(person)); // [["name", "Lee"], ["address", "Seoul"]]
+console.log(Object.entries(person12)); // [["name", "Lee"], ["address", "Seoul"]]
 
-Object.entries(person).forEach(([key, value]) => console.log(key, value));
+Object.entries(person12).forEach(([key, value]) => console.log(key, value));

@@ -204,5 +204,130 @@ class Person {
         return 100;
     }
 }
-const me = new Person('Lee');
-console.log(me); // Person { name: 'Lee' }
+const me5 = new Person('Lee');
+console.log(me5); // Person { name: 'Lee' }
+
+// 22
+// 생성자 함수
+function Person(name) {
+    this.name = name;
+}
+
+// 프로토타입 메서드
+Person.prototype.sayHi = function () {
+    console.log(`Hi! My name is ${this.name}`);
+};
+
+const me6 = new Person('Lee');
+me.sayHi(); // Hi! My name is Lee
+
+// 23
+class Person {
+  // 생성자
+  constructor(name) {
+    this.name = name; // 인스턴스 생성 및 초기화
+  }
+
+  // 프로토타입 메서드
+  sayHi() {
+    console.log(`Hi! My name is ${this.name}`);
+  }
+}
+
+const me7 = new Person("Lee");
+me7.sayHi(); // Hi! My name is Lee
+
+// ** 24
+// me7 객체의 프로토타입은 Person.prototype이다
+console.log(Object.getPrototypeOf(me7) === Person.prototype); // true
+console.log(me7 instanceof Person); // true
+
+// Person.prototype의 프로토타입은 Object.prototype 이다
+console.log(Object.getPrototypeOf(Person.prototype) === Object.prototype); // true
+console.log(me7 instanceof Object); // true
+
+// ** me7 객체의 contructor는 Person 클래스다
+console.log(me7.constructor === Person); // true
+
+// 25
+// 생성자 함수
+function Person1(name) {
+    this.name = name;
+}
+
+// 정적 메서드
+Person1.sayHi = function () {
+    console.log('Hi!');
+}
+
+// 정적 메서드 호출
+Person1.sayHi(); // Hi!
+
+// 26, 27
+class Person2 {
+    // 생성자
+    constructor(name) {
+        this.name = name;
+    }
+
+    // 정적 메서드
+    static sayHi() {
+        console.log('Hi!')
+    }
+}
+
+// * 정적 메서드는 클래스로 호출한다!
+// * 정적 메서드는 인스턴스 없이도 호출 가능하다!
+Person2.sayHi(); // Hi!
+
+// 28
+// 인스턴스 생성
+const me8 = new Person2('Lee');
+me8.sayHi(); // TypeError: me8.sayHi is not a function
+
+
+// 29
+class Square {
+    // 정적 메서드
+    static area(width, height) {
+        return width * height;
+    }
+}
+console.log(Square.area(10, 10)); // 100
+
+// 30
+class Square2 {
+    constructor(width, height) {
+        this.width = width;
+        this.height = height;
+    }
+
+    // 프로토타입 메서드
+    area() {
+        return this.width * this.height
+    }
+}
+const square = new Square2(10, 10);
+console.log(square.area()); // 100
+
+// 31
+// 표준 빌트인 객체의 정적 메서드
+Math.max(1, 2, 3); // 3
+Number.isNaN(NaN); // true
+JSON.stringify({ a: 1 }) // "{ "a": 1 }"
+Object.is({}, {}); // ** // false
+Reflect.has({ a: 1 }, 'a') // ** // true
+
+// 32
+class Person3 {
+    constructor(name) {
+      // 1. 암묵적 인스턴스 생성, this에 바인딩됨
+      console.log(this); // Person {}
+      console.log(Object.getPrototypeOf(this) === Person3.prototype) // true
+
+        // 2. this에 바인딩되어 있는 인스턴스 초기화
+        this.name = name;
+        
+        // 3. 완성된 인스턴스가 바인딩된 this 암묵적 반환
+  }
+}

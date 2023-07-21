@@ -107,3 +107,102 @@ const me3 = new Person(); // (O)
 console.log(MyClass); // ReferenceError: MyClass is not defined
 
 const you = new MyClass(); // (X) ReferenceError: MyClass is not defined
+
+// ** 메서드
+
+// 11
+class Person {
+  // 생성자
+  constructor(name) {
+    this.name = name;
+  }
+}
+
+// 12
+// 클래스는 함수다!
+console.log(typeof Person); // function
+console.dir(Person);
+
+// 13
+// 인스턴스 생성
+const me = new Person("Lee");
+console.log(me);
+
+// 14
+class Person {
+  // 생성자
+  constructor(name) {
+    this.name = name; // 인스턴스 생성, 초기화
+  }
+}
+
+// 생성자 함수
+function Person(name) {
+  this.name = name; // 인스턴스 생성, 초기화
+}
+
+// 15
+class Person {
+    constructor() {}
+    constructor() {}
+} // 2개 이상의 constructor 포함하면 문법에러!
+// SyntaxError: A class my only have one constructor
+
+// 16
+class Person { }
+
+// 17
+class Person {
+    constructor() {} // constructor 생략하면 암묵적으로 빈 constructor 정의됨 
+}
+
+const me = new Person(); // 빈 객체 생성
+console.log(me) // Person {}
+
+// 18
+class Person {
+    constructor() {
+        // 고정값으로 인스턴스 초기화
+        this.name = 'Lee';
+        this.address = 'Seoul';
+    }
+}
+const me = new Person();
+console.log(me); // Person {name: 'Lee', address: 'Seoul'}
+
+// 19
+class Person {
+    constructor(name, address) {
+        // 인수로 인스턴스 초기화
+        this.name = name;
+        this.address = address;
+    }
+}
+// 인수로 초기값 전달 (Lee, Seoul), 초기값은 constructor에 전달된다
+const me = new Person('Lee', 'Seoul'); 
+console.log(me); // Person {name: 'Lee', address: 'Seoul'}
+
+// 20
+class Person {
+    constructor(name) {
+        this.name = name;
+
+        // 명시적으로 객체를 반환하면 암묵적인 this 반환 무시된다
+        return {}
+    }
+}
+
+const me4 = new Person('Lee');
+console.log(me4); // {}
+
+// 21
+class Person {
+    constructor(name) {
+        this.name = name;
+
+        // 명시적으로 원시값 반환하면 원시값 반환은 무시되고 암묵적으로 this 반환
+        return 100;
+    }
+}
+const me = new Person('Lee');
+console.log(me); // Person { name: 'Lee' }

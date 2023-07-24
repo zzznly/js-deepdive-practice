@@ -207,3 +207,101 @@ class Base5 {
 function Foo() {
   super(); // SyntaxError: 'super' keyword unexpected here
 }
+
+// 2. super 참조
+// 68
+class Base {
+  constructor(name) {
+    this.name = name;
+  }
+
+  sayHi() {
+    return `Hi! ${this.name}`;
+  }
+}
+
+// 01) 서브클래스의 프로토타입 메서드 내에서 super.sayHi 는 수퍼클래스의 프로토타입 메서드 sayHi를 가리킨다
+class Derived extends Base {
+  sayHi() {
+    return `${super.sayHi()}. How are you doing?`;
+  }
+}
+
+const derived8 = new Derived("Jinri");
+console.log(derived8.sayHi()); // Hi! Jinri. How are you doing?
+
+
+// 69 - 68과 동일하게 동작.
+class Base2 {
+    constructor(name) {
+        this.name = name;
+    }
+
+    sayHi() {
+        return `Hi! ${this.name}`;
+    }
+}
+
+class Derived2 extends Base2 {
+    sayHi() {
+        const __super = Object.getPrototypeOf(Derived2.prototype); // Base2.prototype
+        return `${__super.sayHi.call(this)}. How are you doing?`; // this 는 Derived2 객체
+    }
+}
+
+const derived9 = new Derived2('Haru');
+console.log(derived9.sayHi()); // Hi! Haru. How are you doing?
+
+// 70
+/*
+[[HomeObject]]는 메서드 자신을 바인딩하고 있는 객체를 가리킨다.
+[[HomeObject]]를 통해 메서드 자신을 바인딩하고 있는 객체의 프로토타입을 찾을 수 있다.
+예를 들어, Derived 클래스의 sayHi 메서드는 Derived.prototype에 바인딩되어 있다.
+따라서 Derived 클래스의 sayHi 메서드의 [[HomeObject]]는 Derived.prototype이고
+이를 통해 Derived 클래스의 sayHi 메서드 내부의 super 참조가 Base.prototype으로 결정된다.
+따라서 super.sayHi는 Base.prototype.sayHi를 가리키게 된다.
+*/
+
+// super = Object.getPrototypeOf([[HomeObject]])
+
+// 71
+const obj = {
+    foo() { }, // ES6 메서드 축약 표현으로 정의한 메서드. [[HomeObject]]를 갖는다.
+    
+    bar: function () {} // 일반 함수. [[HomeObject]]를 갖지 않는다.
+}
+
+// 72
+const base = {
+    name: 'Lee',
+    sayHi() {
+        return `Hi! ${this.name}`;
+    }
+};
+
+const derived = {
+    __proto__: base,
+    sayHi() {
+        return `${super.sayHi()}. How are you doing?`
+    }
+}
+
+console.log(derived.sayHi()); // Hi! Lee. How are you doing?
+
+
+// 02) 서브클래스의 정적 메서드 내에서 super.sayHi 는 수퍼클래스의 정적메서드 sayHi 를 가리킨다.
+// 73
+class Base3 {
+    static sayHi() {
+        return 'Hi!'
+    }
+}
+
+class Derived3 extends Base3 {
+    static sayHi() {
+        return `${super.sayHi()} how are you doing?`;
+    }
+}
+
+console.log(Derived3.sayHi()); // Hi! How are you doing?
+

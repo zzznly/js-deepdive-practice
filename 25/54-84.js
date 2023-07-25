@@ -305,3 +305,111 @@ class Derived3 extends Base3 {
 
 console.log(Derived3.sayHi()); // Hi! How are you doing?
 
+// 74, 75, 76, 77, 78, 79
+// * 상속 클래스의 인스턴스 생성 과정
+class Rectangle {
+  constructor(width, height) {
+    // 암묵적으로 빈 객체 생성, this 바인딩
+    console.log(this); // ColorRectangle {}
+
+    // * new 연산자와 함께 호출된 함수를 가리키는 new.target은 서브클래스를 가리킨다!
+    console.log(new.target); // ColorRectangle
+
+    // 생성된 인스턴스의 프로토타입으로 ColorRectangle.prototype이 설정
+    console.log(Object.getPrototypeOf(this) === ColorRectangle.prototype); // true
+    console.log(this instanceof ColorRectangle); // true
+    console.log(this instanceof Rectangle); // true
+
+    // 인스턴스 초기화
+    this.width = width;
+    this.height = height;
+
+    console.log(this); // ColorRectangle {with: 2, height: 4}
+  }
+
+  getArea() {
+    return this.width * this.height;
+  }
+
+  toString() {
+    return `width = ${this.width}, height = ${this.height}`;
+  }
+}
+
+class ColorRectangle extends Rectangle {
+  constructor(width, height, color) {
+    super(width, height);
+
+    // super가 반환한 인스턴스가 this 에 바인딩된다
+    console.log(this); // ColorRectangle {width: 2, height: 4}
+
+      // 인스턴스 초기화
+      this.color = color;
+
+      // 완성된 인스턴스가 바인딩된 this가 암묵적으로 반환
+      console.log(this); // ColorRectangle {width: 2, height: 4, color: 'red'}
+  }
+
+  // 메서드 오버라이딩
+  toString() {
+    return super.toString() + `, color = ${this.color}`;
+  }
+}
+
+const colorRectangle = new ColorRectangle(2, 4, 'red');
+console.log(colorRectangle); // ColorRectangle { width: 2, height: 4, color: 'red' }
+console.log(colorRectangle.getArea()); // 8
+console.log(colorRectangle.toString()); // width = 2, height = 4, color = red
+
+
+// 표준 빌트인 생성자 함수 확장
+// 80
+class MyArray extends Array {
+
+  // 중복된 배열 요소를 제거하고 반환한다: [1,1,2,3] => [1,2,3]
+  uniq() {
+    return this.filter((v,i,self) => self.indexOf(v) === i)
+  }
+
+  // 모든 배열 요소의 평균을 구한다: [1,2,3] => 2
+  average() {
+      return this.reduce((p, c) => p + c, 0) / this.length;
+  }
+}
+const myArray = new MyArray(1, 1, 2, 3);
+console.log(myArray); // MyArray(4) [1,1,2,3]
+// MyArray.prototype.uniq 호출
+console.log(myArray.uniq()); // MyArray(3) [1,2,3]
+// MyArray.prototype.average 호출
+console.log(myArray.average()); // 1.75
+
+// 81
+// Array.prototype의 메서드 중에서 map, filter와 같이 새로운 배열을 반환하는 메서드가 MyArray 클래스의 인스턴스를 반환한다!
+console.log(myArray.filter(v => v % 2) instanceof MyArray); // true
+
+// 82
+// myArray.filter 가 반환하는 인스턴스는 MyArray 클래스가 생성한 인스턴스다.
+// 따라서 MyArray.prototype의 메서드인 uniq 를 연이어 호출할 수 있다. (메서드 체이닝)
+console.log(myArray.filter(v => v % 2).uniq().average()); // 2
+
+// 83
+class MyArray2 extends Array {
+    static get [Symbol.species]() { return Array; }; // Array가 생성한 인스턴스를 반환하게 하려면, 정적 접근자 프로퍼티를 추가
+
+    uniq() {
+        return this.filter((v, i, self) => self.indexOf(v) === i);
+    }
+
+    average() {
+        return this.reduce((p, c) => p + c, 0) / this.length;
+    }
+}
+
+const myArray2 = new MyArray2(1, 1, 2, 3);
+
+console.log(myArray2.uniq() instanceof MyArray2); // false
+console.log(myArray2.uniq() instanceof Array); // true
+
+// 메서드 체이닝 불가
+// uniq 메서드는 Array 인스턴스를 반환하므로 average 호출 불가
+console.log(myArray2.uniq().average()); // TypeError: myArray.uniq(...).average() is not a function

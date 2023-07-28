@@ -194,3 +194,198 @@ console.log(counter.increase()); // 2
 
 console.log(counter.decrease()); // 1
 console.log(counter.decrease()); // 0
+
+// 13
+const Counter = (function () {
+  let num = 0;
+
+  function Counter() {
+    // this.num = 0;
+  }
+
+  Counter.prototype.increase = function () {
+    return ++num;
+  };
+
+  Counter.prototype.decrease = function () {
+    return num > 0 ? --num : 0;
+  };
+
+  return Counter;
+})();
+
+const counter = new Counter();
+
+console.log(counter.increase()); // 1
+console.log(counter.increase()); // 2
+
+console.log(counter.decrease()); // 1
+console.log(counter.decrease()); // 0
+
+// 14
+// 함수를 인수로 전달받고 함수 반환하는 고차함수
+// 이 함수는 카운트 상태 유지를 위한 자유변수 counter를 기억하는 클로저 반환!
+function makeCounter(aux) {
+  let counter = 0;
+
+  return function () {
+    counter = aux(counter);
+    return counter;
+  };
+}
+
+function increase(n) {
+  return ++n;
+}
+
+function decrease(n) {
+  return --n;
+}
+
+const increaser = makeCounter(increase);
+console.log(increaser()); // 1
+console.log(increaser()); // 2
+
+const decreaser = makeCounter(decrease);
+console.log(decreaser()); // -1
+console.log(decreaser()); // -2
+
+// 15
+// 함수 counter2는 카운트 상태를 유지하기 위한 자유 변수 counter를 기억하는 "클로저" 반환!
+const counter2 = (function () {
+  let counter = 0;
+
+  return function (aux) {
+    counter = aux(counter);
+    return counter;
+  };
+})();
+
+// 보조함수
+function increase2(n) {
+  return ++n;
+}
+function decrease2(n) {
+  return --n;
+}
+
+console.log(counter2(increase2)); // 1
+console.log(counter2(increase2)); // 2
+
+console.log(counter2(decrease2)); // 1
+console.log(counter2(decrease2)); // 0
+
+// 16
+function Person(name, age) {
+  this.name = name; // public
+  let _age = age; // private - 생성자 함수 외부에서 참조 불가
+
+  // 인스턴스 메서드
+  this.sayHi = function () {
+    console.log(`Hi! My name is ${this.name}. I am ${_age}.`);
+  };
+}
+
+const me = new Person("Lee", 20);
+me.sayHi(); // Hi! My name is Lee. I am 20.
+
+console.log(me.name); // Lee
+console.log(me._age); // undefined
+
+const you = new Person("Yoo", 29);
+you.sayHi(); // Hi! My name is Yoo. I am 29.
+
+console.log(you.name); // Yoo
+console.log(you._age); // undefined
+
+// 17
+function Person2(name, age) {
+  this.name = name; // public
+  let _age = age; // private - 생성자 함수 외부에서 참조 불가
+}
+
+Person2.prototype.sayHi = function () {
+  console.log(`Hi! My name is ${this.name}. I am ${_age}`);
+  // Person 생성자 함수의 지역 변수 _age 참조 불가! (생성자 함수 외부이므로)
+};
+
+// 18, 19
+// 그래서 Person 생성자 함수와 Person.prototype.sayHi를 하나의 함수(즉시 실행 함수) 안에 모아보자
+const Person3 = (function () {
+  let _age = 0; // private;
+
+  function Person(name, age) {
+    this.name = name; // public
+    _age = age;
+  }
+
+  Person.prototype.sayHi = function () {
+    console.log(`Hi! My name is ${this.name}. I am ${_age} years old.`);
+  };
+
+  return Person;
+})();
+
+const me3 = new Person3("Lee", 22);
+me3.sayHi(); // Hi! My name is Lee. I am 22 years old.
+console.log(me3.name); // Lee
+console.log(me3._age); // undefined
+
+const you3 = new Person3("Kim", 30);
+you3.sayHi(); // Hi! My name is Kim. I am 30 years old.
+console.log(you3.name); // Kim
+console.log(you3._age); // undefined
+
+// _age 변수 값이 변경된다!
+me3.sayHi(); // Hi! My name is Lee. I am 30.
+
+// 생성자함수 Person 과 sayHi 는 클로저
+
+// => js는 완전한 정보 은닉을 지원한지 않는다
+
+// 20 - 자주 발생하는 실수 *
+var funcs = [];
+
+for (var i = 0; i < 3; i++) {
+  funcs[i] = function () {
+    return i;
+  }; // (1)
+}
+
+for (var j = 0; j < funcs.length; j++) {
+  console.log(funcs[j]()); // (2) - 3, 3, 3
+}
+
+// 21 - 20번 예제를 올바르게 수정
+var funcs = [];
+
+for (var i = 0; i < 3; i++) {
+  funcs[i] = (function (id) {
+    return function () {
+      return id;
+    };
+  })(i);
+}
+
+for (var j = 0; j < funcs.length; j++) {
+  console.log(funcs[j]()); // 0, 1, 2
+}
+
+// 22
+const funcs = [];
+
+for (let i = 0; i < 3; i++) {
+  funcs[i] = function () {
+    return i;
+  };
+}
+
+for (let i = 0; i < funcs.length; i++) {
+  console.log(funcs[i]()); // 0 1 2
+}
+
+// 23
+// 배열의 요소로 추가된 함수들은 모두 클로저!
+const funcs2 = Array.from(new Array(3), (_, i) => () => i); // (3) [f,f,f]
+
+funcs2.forEach(f => console.log(f())); // 0 1 2

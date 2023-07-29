@@ -340,17 +340,25 @@ console.log(you3._age); // undefined
 me3.sayHi(); // Hi! My name is Lee. I am 30.
 
 // 생성자함수 Person 과 sayHi 는 클로저
-
 // => js는 완전한 정보 은닉을 지원한지 않는다
 
-// 20 - 자주 발생하는 실수 *
-var funcs = [];
+// 20 - 자주 발생하는 실수 ***
+var funcs = []; // 먼저, 배열 funcs를 선언합니다.
 
 for (var i = 0; i < 3; i++) {
+  // 반복문을 사용하여 i 변수를 0부터 2까지 증가시킵니다.
   funcs[i] = function () {
-    return i;
+    return i; // ** 여기서 주의해야 할 점은 함수가 i를 참조하는 것이지 i의 값을 복사하는 것이 아니다!
   }; // (1)
 }
+
+/**
+ * var 키워드로 선언된 변수 i는 함수 레벨 스코프를 갖습니다. 따라서 반복문에서 선언된 함수들이 모두 같은 i를 참조하게 됩니다.
+ * 그리고 반복문이 종료된 이후에도 클로저가 유지되며(클로저), 함수들이 호출될 때 i의 최종 값인 3을 반환합니다.
+ */
+
+console.log(funcs); // 반복문이 끝난 후 funcs 배열에는 세 개의 함수가 들어있다. // [function () { return i; }, function () { return i; }, function () { return i; }]
+// 이때, i 의 값은 이미 3이 되었다.
 
 for (var j = 0; j < funcs.length; j++) {
   console.log(funcs[j]()); // (2) - 3, 3, 3
@@ -386,6 +394,8 @@ for (let i = 0; i < funcs.length; i++) {
 
 // 23
 // 배열의 요소로 추가된 함수들은 모두 클로저!
-const funcs2 = Array.from(new Array(3), (_, i) => () => i); // (3) [f,f,f]
+const funcs2 = Array.from(new Array(3), (_, i) => {
+  () => i;
+}); // (3) [f,f,f]
 
 funcs2.forEach(f => console.log(f())); // 0 1 2

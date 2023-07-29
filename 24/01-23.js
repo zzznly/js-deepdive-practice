@@ -364,12 +364,13 @@ for (var j = 0; j < funcs.length; j++) {
   console.log(funcs[j]()); // (2) - 3, 3, 3
 }
 
-// 21 - 20번 예제를 올바르게 수정
+// 21 - 20번 예제를 올바르게 수정 ***
 var funcs = [];
 
 for (var i = 0; i < 3; i++) {
   funcs[i] = (function (id) {
     return function () {
+      // 상위함수 종료 후에도 상위함수 스코프 내의 변수 id 참조 (클로저)
       return id;
     };
   })(i);
